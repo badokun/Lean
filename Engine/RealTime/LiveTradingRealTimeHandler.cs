@@ -203,25 +203,8 @@ namespace QuantConnect.Lean.Engine.RealTime
         /// </summary>
         public void Exit()
         {
-            if (_realTimeThread != null)
-            {
-                _cancellationTokenSource.Cancel();
-                try
-                {
-                    if (!_realTimeThread.Join(TimeSpan.FromMinutes(5)))
-                    {
-                        Log.Error("LiveTradingRealTimeHandler.Exit(): Timeout waiting for update thread to stop");
-                        _realTimeThread.Abort();
-                    }
-                }
-                catch (Exception exception)
-                {
-                    // just in case catch any exceptions thrown
-                    Log.Error(exception);
-                }
-
-                _realTimeThread = null;
-            }
+            _realTimeThread.StopSafely(TimeSpan.FromMinutes(5), _cancellationTokenSource);
+            _realTimeThread = null;
         }
 
         /// <summary>
